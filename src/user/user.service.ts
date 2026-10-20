@@ -11,9 +11,8 @@ export class UserService {
 
   constructor(@InjectRepository(User) private userRepository: Repository<User>) {}
 
-  async create(user:RegisterDto) {
+  async create(user:RegisterDto): Promise<User> {
 
-    
     const userDb: User | null = await this.userRepository.findOne({ where: { email: user.email } });
 
     if(userDb){
@@ -30,5 +29,16 @@ export class UserService {
     
   }
 
+
+  async findByEmail(email:string): Promise<User | null>{
+
+    const user: User | null = await this.userRepository.findOne({where:{email}})
+
+    if(!user){
+      throw new ConflictException('No existe un usuario con este email');
+    }
+
+    return user;
+  }
  
 }

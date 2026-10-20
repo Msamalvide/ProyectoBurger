@@ -1,7 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, ConflictException } from '@nestjs/common';
 import { JwtService } from 'node_modules/@nestjs/jwt/dist/jwt.service';
 import { UserService } from '../user/user.service';
 import { RegisterDto } from './dto/register.dto/register.dto';
+import { User } from '../user/entities/user.entity';
+import {LoginDto} from '../auth/dto/login.dto/login.dto'
+import * as bcrypt from 'bcrypt'
 
 @Injectable()
 export class AuthService {
@@ -10,8 +13,30 @@ export class AuthService {
         private readonly jwtService: JwtService
     ) {}
 
-    singUp(registerUserDto: RegisterDto) {
-        return this.userService.create(registerUserDto);
+    async singUp(registerUserDto: RegisterDto) {
+        const user: User = await this.userService.create(registerUserDto);
+        return this.generateToken(user);
+    }
+
+    async login (credentials:LoginDto){
+        
+        const user: User | null = await this.userService.findByEmail(credentials.email);
+        if(!user){
+            throw new ConflictException('Credenciales inválidas');
+        }
+        const compare = await bcrypt.compare(credentials.password, user.password);
+        if(!compare){
+            throw new ConflictException('Credenciales inválidas');
+        }
+
+        return this.generateToken(user)
+
+    }
+
+
+    private generateToken (user: User){
+        const payload = { id: user.id, email: user.email, role: user.role };
+        return {access_token: this.jwtService.sign(payload)};
     }
 
 }
