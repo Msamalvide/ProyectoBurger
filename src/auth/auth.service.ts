@@ -15,7 +15,8 @@ export class AuthService {
 
     async singUp(registerUserDto: RegisterDto) {
         const user: User = await this.userService.create(registerUserDto);
-        return this.generateToken(user);
+        const {password,...rest}= user;
+        return rest;
     }
 
     async login (credentials:LoginDto){
