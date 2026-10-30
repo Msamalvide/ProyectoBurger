@@ -1,9 +1,13 @@
-import { Controller, Post } from '@nestjs/common';
+import { Controller, Post, UseGuards } from '@nestjs/common';
 import {AuthService} from './auth.service'
 import {RegisterDto} from './dto/register.dto/register.dto'
 import { ApiResponse } from '@nestjs/swagger';
 import { Body } from '@nestjs/common';
 import { LoginDto } from './dto/login.dto/login.dto';
+import { Roles } from '../decorators/Roles.decorator';
+import { userRole } from '../enums/rol';
+import { UserRoleGuard } from '../guards/user.role.guard';
+import { JwtAuthGuard } from '../guards/jwt.auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -13,6 +17,8 @@ export class AuthController {
         status: 201
     })
     @Post('/singUp')
+    @Roles(userRole.admin)
+    @UseGuards(JwtAuthGuard, UserRoleGuard)
     postSingUp(@Body() registerUserDto: RegisterDto) {
         return this.authService.singUp(registerUserDto);
     }
