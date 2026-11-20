@@ -1,9 +1,10 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsArray, IsNumber, IsString, IsUrl, Min } from "class-validator";
+import { IsArray, IsInt, IsNotEmpty, IsNumber, IsOptional, IsString, IsUrl, Min } from "class-validator";
 
 
 export class CreateProductDto {
     @IsString()
+    @IsNotEmpty()
     @ApiProperty({
         description:'Name of Product',
         example:'Royal',
@@ -18,13 +19,15 @@ export class CreateProductDto {
     @IsString({ each: true })
     ingredients!: string[];
 
+    @IsOptional()
     @IsUrl()
     @ApiProperty({
         description: 'URL of the product image',
     })
-    imgUrl?:string;
+    imageUrl?:string;
 
     @IsNumber()
+    @IsInt()
     @Min(0)
     @ApiProperty({
         description: 'Price of the product for simple size',
@@ -33,6 +36,7 @@ export class CreateProductDto {
     simplePrice!: number;
 
     @IsNumber()
+    @IsInt()
     @Min(0)
     @ApiProperty({
         description: 'Price of the product for double size',

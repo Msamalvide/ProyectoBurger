@@ -12,7 +12,7 @@ const typeormConfig= {
     database: process.env.DB_NAME,
     entities: [__dirname + '/../**/*.entity.{js,ts}'],
     synchronize: true,
-    dropSchema: false,
+    dropSchema: true,
 }
 
 export default registerAs('typeorm',()=> typeormConfig)
